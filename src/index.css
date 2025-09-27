@@ -1,0 +1,17 @@
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* html{
+    scroll-behaviour: smooth;
+} */
+
+
+@layer utilities{
+    .clip-path-cursor{
+        clip-path: polygon(0 0, 100% 0, 100% 98%, 75% 95% 0 100%);
+    }
+}
