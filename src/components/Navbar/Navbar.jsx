@@ -2,15 +2,8 @@ import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { Download, Menu, X } from "lucide-react";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
-
-const menuItems = [
-  { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "projects", label: "Projects" },
-  { id: "education", label: "Education" },
-  { id: "work", label: "Experience" },
-  { id: "contact", label: "Contact" },
-];
+import { navItems, personalInfo } from "../../data";
+import { navEnter, mobileMenu, navPill } from "../../utils/animations";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +18,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const sections = menuItems
+    const sections = navItems
       .map((item) => document.getElementById(item.id))
       .filter(Boolean);
 
@@ -53,14 +46,15 @@ const Navbar = () => {
 
   return (
     <Motion.nav
-      initial={{ y: -22, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
+      initial={navEnter.initial}
+      animate={navEnter.animate}
+      transition={navEnter.transition}
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         isScrolled ? "theme-nav-scrolled shadow-[0_12px_35px_rgba(0,0,0,.08)]" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 h-20 flex items-center justify-between">
+        {/* Logo */}
         <button
           onClick={() => goTo("about")}
           className="group flex items-center gap-2 text-left theme-heading"
@@ -70,13 +64,14 @@ const Navbar = () => {
             MS
           </span>
           <span className="hidden sm:block">
-            <span className="block text-sm font-bold leading-none">Mohini Sahoo</span>
-            <span className="mono text-[11px] text-cyan-400">Full Stack Developer</span>
+            <span className="block text-sm font-bold leading-none">{personalInfo.fullName}</span>
+            <span className="mono text-[11px] text-cyan-400">{personalInfo.roles[0]}</span>
           </span>
         </button>
 
+        {/* Desktop Nav */}
         <ul className="hidden lg:flex items-center gap-2 rounded-full border border-cyan-400/10 bg-white/[.03] p-1 theme-text backdrop-blur-xl">
-          {menuItems.map((item) => (
+          {navItems.map((item) => (
             <li key={item.id}>
               <button
                 onClick={() => goTo(item.id)}
@@ -90,7 +85,7 @@ const Navbar = () => {
                   <Motion.span
                     layoutId="active-nav"
                     className="absolute inset-0 rounded-full bg-cyan-400"
-                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    transition={navPill}
                   />
                 )}
                 <span className="relative z-10">{item.label}</span>
@@ -99,11 +94,11 @@ const Navbar = () => {
           ))}
         </ul>
 
+        {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-4">
           <ThemeToggle />
-
           <a
-            href="/Mohini-Sahoo-cv.pdf"
+            href={personalInfo.resumePath}
             download
             className="primary-btn !px-5 !py-2.5 text-sm"
           >
@@ -112,6 +107,7 @@ const Navbar = () => {
           </a>
         </div>
 
+        {/* Mobile Toggle */}
         <button
           className="lg:hidden grid h-11 w-11 place-items-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-400 transition hover:scale-105"
           onClick={() => setIsOpen(!isOpen)}
@@ -121,19 +117,23 @@ const Navbar = () => {
         </button>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <Motion.div
-            initial={{ opacity: 0, y: -14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.22 }}
+            initial={mobileMenu.initial}
+            animate={mobileMenu.animate}
+            exit={mobileMenu.exit}
+            transition={mobileMenu.transition}
             className="lg:hidden theme-mobile-nav"
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-5">
-              {menuItems.map((item) => (
-                <button
+              {navItems.map((item, i) => (
+                <Motion.button
                   key={item.id}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.3 }}
                   onClick={() => goTo(item.id)}
                   className={`rounded-2xl px-4 py-3 text-left font-semibold transition ${
                     activeSection === item.id
@@ -142,13 +142,12 @@ const Navbar = () => {
                   }`}
                 >
                   {item.label}
-                </button>
+                </Motion.button>
               ))}
 
               <div className="mt-3 flex items-center justify-between gap-4 border-t border-cyan-400/10 pt-4">
                 <ThemeToggle />
-
-                <a href="/Mohini-Sahoo-cv.pdf" download className="primary-btn !px-5 !py-2.5 text-sm">
+                <a href={personalInfo.resumePath} download className="primary-btn !px-5 !py-2.5 text-sm">
                   <Download size={17} />
                   Download CV
                 </a>
